@@ -25,10 +25,13 @@ int fm_exists();
 
 int fm_set_freq(int freq);
 
+int fm_get_freq();
+
 int fm_on();
 
 int fm_off();
 
+int fm_get_vol();
 #if __cplusplus
 };  // extern "C"
 #endif

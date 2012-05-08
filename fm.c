@@ -153,8 +153,8 @@ struct radio_data_t
 #define Si4709_IOC_CUR_RSSI_GET _IOR(Si4709_IOC_MAGIC, 12, rssi_snr_t)
 #define Si4709_IOC_VOLEXT_ENB _IO(Si4709_IOC_MAGIC, 13)
 #define Si4709_IOC_VOLEXT_DISB _IO(Si4709_IOC_MAGIC, 14)
-#define Si4709_IOC_VOLUME_SET _IOW(Si4709_IOC_MAGIC, 15, u8)
-#define Si4709_IOC_VOLUME_GET _IOR(Si4709_IOC_MAGIC, 16, u8)
+#define Si4709_IOC_VOLUME_SET _IOW(Si4709_IOC_MAGIC, 15, uint8_t)
+#define Si4709_IOC_VOLUME_GET _IOR(Si4709_IOC_MAGIC, 16, uint8_t)
 #define Si4709_IOC_MUTE_ON _IO(Si4709_IOC_MAGIC, 17)
 #define Si4709_IOC_MUTE_OFF _IO(Si4709_IOC_MAGIC, 18)
 #define Si4709_IOC_MONO_SET _IO(Si4709_IOC_MAGIC, 19)
@@ -225,7 +225,7 @@ int fm_exists()
 
 int fm_on()
 {
-  // LOGV("%s", __func__);
+  //LOGV("%s", __func__);
 
   if (1 == radioEnabled)
   {
@@ -237,7 +237,7 @@ int fm_on()
 
   if (ret < 0)
   {
-    // LOGE("%s: IOCTL Si4709_IOC_POWERUP failed %d", __func__, ret);
+    //LOGE("%s: IOCTL Si4709_IOC_POWERUP failed %d", __func__, ret);
     return -1;
   }
 
@@ -253,7 +253,7 @@ int fm_on()
 
 int fm_off()
 {
-  // LOGV("%s", __func__);
+  //LOGV("%s", __func__);
   if (0 == radioEnabled)
   {
     return 0;
@@ -264,7 +264,7 @@ int fm_off()
 
   if (ret < 0)
   {
-    // LOGE("%s: IOCTL Si4709_IOC_POWERDOWN failed %d", __func__, ret);
+    //LOGE("%s: IOCTL Si4709_IOC_POWERDOWN failed %d", __func__, ret);
     return -1;
   }
 
@@ -275,19 +275,49 @@ int fm_off()
 
 int fm_set_freq(int freq)
 {
-  // LOGV("%s", __func__);
+  //LOGV("%s", __func__);
 
   int ret;
   ret = send_signal_with_value(Si4709_IOC_CHAN_SELECT, freq);
 
   if (ret < 0)
   {
-    // LOGE("%s: IOCTL Si4709_IOC_CHAN_SELECT failed %d", __func__, ret);
+    //LOGE("%s: IOCTL Si4709_IOC_CHAN_SELECT failed %d", __func__, ret);
     return -1;
   }
 
   lastFreq = freq;
   return 0;
+}
+
+int fm_get_freq()
+{
+  //LOGV("%s", __func__);
+  int ret;
+  uint32_t freq;
+
+  ret = send_signal_with_value(Si4709_IOC_CHAN_GET, freq);
+  if (ret < 0)
+  {
+    //LOGE("%s: IOCTL Si4709_IOC_CHAN_GET failed %d", __func__, ret);
+    return ret;
+  }
+
+  return freq;
+}
+
+int fm_get_vol()
+{
+  int ret;
+  uint8_t vol;
+
+  ret = send_signal_with_value(Si4709_IOC_VOLUME_GET, vol);
+  if (ret < 0)
+  {
+    return ret;
+  }
+
+  return vol;
 }
 
 int main()
