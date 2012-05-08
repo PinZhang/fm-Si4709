@@ -23,88 +23,6 @@
 
 #define LOG_TAG "FM_HW"
 
-struct dev_state_t
-{
-    int power_state;
-    int seek_state;
-};
-
-struct rssi_snr_t
-{
-    uint8_t curr_rssi;
-    uint8_t curr_rssi_th;
-    uint8_t curr_snr;
-};
-
-struct device_id
-{
-    uint8_t part_number;
-    uint16_t manufact_number;
-};
-
-struct chip_id
-{
-    uint8_t chip_version;
-    uint8_t device;
-    uint8_t firmware_version;
-};
-
-struct sys_config2
-{
-    uint16_t rssi_th;
-    uint8_t fm_band;
-    uint8_t fm_chan_spac;
-    uint8_t fm_vol;
-};
-
-struct sys_config3
-{
-    uint8_t smmute;
-    uint8_t smutea;
-    uint8_t volext;
-    uint8_t sksnr;
-    uint8_t skcnt;
-};
-
-struct status_rssi
-{
-    uint8_t rdsr;
-    uint8_t stc;
-    uint8_t sfbl;
-    uint8_t afcrl;
-    uint8_t rdss;
-    uint8_t blera;
-    uint8_t st;
-    uint16_t rssi;
-};
-
-struct power_config
-{
-    uint16_t dsmute :1;
-    uint16_t dmute:1;
-    uint16_t mono:1;
-    uint16_t rds_mode:1;
-    uint16_t sk_mode:1;
-    uint16_t seek_up:1;
-    uint16_t seek:1;
-    uint16_t power_disable:1;
-    uint16_t power_enable:1;
-};
-
-struct radio_data_t
-{
-    uint16_t rdsa;
-    uint16_t rdsb;
-    uint16_t rdsc;
-    uint16_t rdsd;
-    uint8_t curr_rssi;
-    uint32_t curr_channel;
-    uint8_t blera;
-    uint8_t blerb;
-    uint8_t blerc;
-    uint8_t blerd;
-};
-
 #define NUM_SEEK_PRESETS 20
 
 #define WAIT_OVER 0
@@ -333,10 +251,16 @@ int fm_get_vol()
   return vol;
 }
 
-int main()
+int fm_get_power_config(power_config * pc)
 {
-  int ret;
-  ret = fm_on();
-  printf("Hello World!%d\n", ret);
-  return 0;
+  int rt, fd;
+  fd = open(THE_DEVICE, O_RDWR);
+  if (fd < 0)
+    return -1;
+
+  rt = ioctl(fd, Si4709_IOC_POWER_CONFIG_GET, pc);
+
+  close(fd);
+  return rt;
 }
+
