@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#include "hardware_legacy/fm.h"
-#include "cutils/log.h"
+#include "fm.h"
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <fcntl.h>
 
 #define LOG_TAG "FM_HW"
@@ -225,7 +225,7 @@ int fm_exists()
 
 int fm_on()
 {
-  LOGV("%s", __func__);
+  // LOGV("%s", __func__);
 
   if (1 == radioEnabled)
   {
@@ -237,7 +237,7 @@ int fm_on()
 
   if (ret < 0)
   {
-    LOGE("%s: IOCTL Si4709_IOC_POWERUP failed %d", __func__, ret);
+    // LOGE("%s: IOCTL Si4709_IOC_POWERUP failed %d", __func__, ret);
     return -1;
   }
 
@@ -253,7 +253,7 @@ int fm_on()
 
 int fm_off()
 {
-  LOGV("%s", __func__);
+  // LOGV("%s", __func__);
   if (0 == radioEnabled)
   {
     return 0;
@@ -264,7 +264,7 @@ int fm_off()
 
   if (ret < 0)
   {
-    LOGE("%s: IOCTL Si4709_IOC_POWERDOWN failed %d", __func__, ret);
+    // LOGE("%s: IOCTL Si4709_IOC_POWERDOWN failed %d", __func__, ret);
     return -1;
   }
 
@@ -275,14 +275,14 @@ int fm_off()
 
 int fm_set_freq(int freq)
 {
-  LOGV("%s", __func__);
+  // LOGV("%s", __func__);
 
   int ret;
   ret = send_signal_with_value(Si4709_IOC_CHAN_SELECT, freq);
 
   if (ret < 0)
   {
-    LOGE("%s: IOCTL Si4709_IOC_CHAN_SELECT failed %d", __func__, ret);
+    // LOGE("%s: IOCTL Si4709_IOC_CHAN_SELECT failed %d", __func__, ret);
     return -1;
   }
 
@@ -290,3 +290,10 @@ int fm_set_freq(int freq)
   return 0;
 }
 
+int main()
+{
+  int ret;
+  ret = fm_on();
+  printf("Hello World!%d\n", ret);
+  return 0;
+}
