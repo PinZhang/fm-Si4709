@@ -32,6 +32,8 @@ int fm_on();
 int fm_off();
 
 int fm_get_vol();
+
+int fm_set_vol(int vol);
 #if __cplusplus
 };  // extern "C"
 #endif

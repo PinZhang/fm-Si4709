@@ -306,6 +306,19 @@ int fm_get_freq()
   return freq;
 }
 
+int fm_set_vol(int vol)
+{
+  int ret;
+
+  ret = send_signal_with_value(Si4709_IOC_VOLUME_SET, vol);
+  if (ret < 0)
+  {
+    return ret;
+  }
+
+  return 0;
+}
+
 int fm_get_vol()
 {
   int ret;
