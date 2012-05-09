@@ -117,14 +117,14 @@ static int send_signal(int signal)
   return rt;
 }
 
-static int send_signal_with_value(int signal, int value)
+static int send_signal_with_value(int signal, int * value)
 {
   int rt, fd;
   fd = open(THE_DEVICE, O_RDWR);
   if (fd < 0)
     return -1;
 
-  rt = ioctl(fd, signal, &value);
+  rt = ioctl(fd, signal, value);
 
   close(fd);
   return rt;
@@ -150,7 +150,7 @@ int fm_on()
     return 0;
   }
 
-  int ret;
+  int ret = 0;
   ret = send_signal(Si4709_IOC_POWERUP);
 
   if (ret < 0)
@@ -177,7 +177,7 @@ int fm_off()
     return 0;
   }
 
-  int ret;
+  int ret = 0;
   ret = send_signal(Si4709_IOC_POWERDOWN);
 
   if (ret < 0)
@@ -195,8 +195,8 @@ int fm_set_freq(int freq)
 {
   //LOGV("%s", __func__);
 
-  int ret;
-  ret = send_signal_with_value(Si4709_IOC_CHAN_SELECT, freq);
+  int ret = 0;
+  ret = send_signal_with_value(Si4709_IOC_CHAN_SELECT, &freq);
 
   if (ret < 0)
   {
@@ -211,10 +211,10 @@ int fm_set_freq(int freq)
 int fm_get_freq()
 {
   //LOGV("%s", __func__);
-  int ret;
-  uint32_t freq;
+  int ret = 0;
+  uint32_t freq = 0;
 
-  ret = send_signal_with_value(Si4709_IOC_CHAN_GET, freq);
+  ret = send_signal_with_value(Si4709_IOC_CHAN_GET, &freq);
   if (ret < 0)
   {
     //LOGE("%s: IOCTL Si4709_IOC_CHAN_GET failed %d", __func__, ret);
@@ -226,9 +226,9 @@ int fm_get_freq()
 
 int fm_set_vol(int vol)
 {
-  int ret;
+  int ret = 0;
 
-  ret = send_signal_with_value(Si4709_IOC_VOLUME_SET, vol);
+  ret = send_signal_with_value(Si4709_IOC_VOLUME_SET, &vol);
   if (ret < 0)
   {
     return ret;
@@ -240,9 +240,9 @@ int fm_set_vol(int vol)
 int fm_get_vol()
 {
   int ret;
-  uint8_t vol;
+  uint8_t vol = 0;
 
-  ret = send_signal_with_value(Si4709_IOC_VOLUME_GET, vol);
+  ret = send_signal_with_value(Si4709_IOC_VOLUME_GET, &vol);
   if (ret < 0)
   {
     return ret;
@@ -264,3 +264,22 @@ int fm_get_power_config(power_config * pc)
   return rt;
 }
 
+int main()
+{
+  printf("Turn on fm:\n");
+  int ret = fm_on();
+  if (ret < 0)
+  {
+    printf("Fail to turn on.");
+    return -1;
+  }
+  printf("FM is turned on. Get frequency:\n");
+  int freq = fm_get_freq();
+  printf("Freq: %d\n", freq);
+
+  freq = 15819;
+  fm_set_freq(freq);
+  freq = fm_get_freq();
+  printf("Freq: %d", freq);
+  return 0;
+}
