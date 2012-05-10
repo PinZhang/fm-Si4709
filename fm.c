@@ -251,17 +251,29 @@ int fm_get_vol()
   return vol;
 }
 
-int fm_get_power_config(power_config * pc)
+int fm_mute_on()
 {
-  int rt, fd;
-  fd = open(THE_DEVICE, O_RDWR);
-  if (fd < 0)
-    return -1;
+  return send_signal(Si4709_IOC_MUTE_ON);
+}
 
-  rt = ioctl(fd, Si4709_IOC_POWER_CONFIG_GET, pc);
+int fm_mute_off()
+{
+  return send_signal(Si4709_IOC_MUTE_OFF);
+}
 
-  close(fd);
-  return rt;
+int fm_get_power_config()
+{
+  int rt;
+
+  int pc = 0;
+  rt = send_signal_with_value(Si4709_IOC_POWER_CONFIG_GET, &pc);
+
+  if (rt < 0)
+  {
+    return rt;
+  }
+
+  return pc;
 }
 
 int main()
@@ -280,6 +292,37 @@ int main()
   freq = 15819;
   fm_set_freq(freq);
   freq = fm_get_freq();
-  printf("Freq: %d", freq);
+  printf("Freq: %d\n", freq);
+
+  // power_config pc;
+  int pc = fm_get_power_config();
+
+  if (pc < 0)
+  {
+    printf("Fail to get power config\n");
+  }
+  else
+  {
+    printf("Power Config: %d", pc);
+  }
+
+  printf("Set mute on\n");
+  ret = fm_mute_on();
+  if (ret < 0)
+  {
+    printf("Fail to set mute on");
+  }
+  pc = fm_get_power_config();
+
+  if (pc < 0)
+  {
+    printf("Fail to get power config\n");
+  }
+  else
+  {
+    printf("Power Config: %d", pc);
+  }
+
   return 0;
 }
+

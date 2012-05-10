@@ -119,7 +119,12 @@ int fm_get_vol();
 
 int fm_set_vol(int vol);
 
-int fm_get_power_config(power_config * pc);
+int fm_get_power_config();
+
+int fm_mute_on();
+
+int fm_mute_off();
+
 #if __cplusplus
 };  // extern "C"
 #endif
