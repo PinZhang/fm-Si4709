@@ -1,5 +1,5 @@
 # !/bin/sh
-cd ~/android-src
+cd ~/work/android-src
 . build/envsetup.sh
 cd fm
 mm
