@@ -224,6 +224,60 @@ int fm_get_freq()
   return freq;
 }
 
+int fm_seek_up()
+{
+  int ret = 0;
+  uint32_t freq = 0;
+
+  ret = send_signal_with_value(Si4709_IOC_SEEK_UP, &freq);
+  if (ret < 0)
+  {
+    return ret;
+  }
+
+  return freq;
+}
+
+int fm_seek_down()
+{
+  int ret = 0;
+  uint32_t freq = 0;
+
+  ret = send_signal_with_value(Si4709_IOC_SEEK_DOWN, &freq);
+  if (ret < 0)
+  {
+    return ret;
+  }
+
+  return freq;
+}
+
+int fm_cancel_seek()
+{
+  int ret = 0;
+  ret = send_signal(Si4709_IOC_SEEK_CANCEL);
+
+  if (ret < 0)
+  {
+    return -1;
+  }
+
+  return 0;
+}
+
+int fm_set_band(int band)
+{
+  int ret = 0;
+
+  ret = send_signal_with_value(Si4709_IOC_BAND_SET, &band);
+  if (ret < 0)
+  {
+    return -1;
+  }
+
+  return 0;
+}
+
 int fm_set_vol(int vol)
 {
   int ret = 0;
@@ -276,8 +330,47 @@ int fm_get_power_config()
   return pc;
 }
 
+// -1: failed
+// 0: power off
+// 1: power on
+int fm_get_power_state()
+{
+  int pc = fm_get_power_config();
+  if (pc < 0)
+  {
+    return pc;
+  }
+
+  if((pc & 256) > 0)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int fm_set_chan_spacing(int spacing)
+{
+  int ret = 0;
+  ret = send_signal_with_value(Si4709_IOC_CHAN_SPACING_SET, &spacing);
+  if (ret < 0)
+  {
+    return -1;
+  }
+
+  return 0;
+}
+
+void printCurrentFreq()
+{
+  int freq = fm_get_freq();
+  printf("Current Freq: %d\n", freq);
+}
+
 int main()
 {
+  printf("FM Power On: %d\n", fm_get_power_state());
+
   printf("Turn on fm:\n");
   int ret = fm_on();
   if (ret < 0)
@@ -285,14 +378,37 @@ int main()
     printf("Fail to turn on.");
     return -1;
   }
-  printf("FM is turned on. Get frequency:\n");
-  int freq = fm_get_freq();
-  printf("Freq: %d\n", freq);
 
-  freq = 15819;
+  printf("Set Band\n");
+  fm_set_band(BAND_76000_108000_kHz);
+
+  printCurrentFreq();
+
+  int freq = 90000;
   fm_set_freq(freq);
-  freq = fm_get_freq();
-  printf("Freq: %d\n", freq);
+
+  printCurrentFreq();
+
+  int spacing = CHAN_SPACING_200_kHz;
+  printf("Set channel spacing: %d\n", spacing);
+  fm_set_chan_spacing(spacing);
+  printCurrentFreq();
+
+  printf("Seeking down ...\n");
+  ret = fm_seek_down();
+  if (freq < 0)
+  {
+    printf("Fail to seek down.\n");
+  }
+  printCurrentFreq();
+
+  printf("Seeking up ...\n");
+  ret = fm_seek_up();
+  if (freq < 0)
+  {
+    printf("Fail to seek up.\n");
+  }
+  printCurrentFreq();
 
   // power_config pc;
   int pc = fm_get_power_config();

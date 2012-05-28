@@ -115,6 +115,16 @@ int fm_on();
 
 int fm_off();
 
+int fm_seek_down();
+
+int fm_seek_up();
+
+int fm_cancel_seek();
+
+int fm_set_band(int band);
+
+int fm_get_power_state();
+
 int fm_get_vol();
 
 int fm_set_vol(int vol);
