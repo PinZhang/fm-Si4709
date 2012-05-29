@@ -195,6 +195,9 @@ int fm_set_freq(int freq)
 {
   //LOGV("%s", __func__);
 
+  // The minimal spacing is 50KHZ
+  freq /= 10;
+
   int ret = 0;
   ret = send_signal_with_value(Si4709_IOC_CHAN_SELECT, &freq);
 
@@ -221,6 +224,8 @@ int fm_get_freq()
     return ret;
   }
 
+  // set unit as KHZ
+  freq *= 10;
   return freq;
 }
 
@@ -379,19 +384,18 @@ int main()
     return -1;
   }
 
-  printf("Set Band\n");
-  fm_set_band(BAND_76000_108000_kHz);
+  //printf("Set Band\n");
+  //fm_set_band(BAND_76000_108000_kHz);
 
   printCurrentFreq();
 
-  int freq = 90000;
-  fm_set_freq(freq);
-
-  printCurrentFreq();
-
-  int spacing = CHAN_SPACING_200_kHz;
+  int spacing = CHAN_SPACING_50_kHz;
   printf("Set channel spacing: %d\n", spacing);
   fm_set_chan_spacing(spacing);
+  printCurrentFreq();
+
+  int freq = 91500;
+  fm_set_freq(freq);
   printCurrentFreq();
 
   printf("Seeking down ...\n");
