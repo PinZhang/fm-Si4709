@@ -240,7 +240,7 @@ int fm_seek_up()
     return ret;
   }
 
-  return freq;
+  return freq * 10;
 }
 
 int fm_seek_down()
@@ -254,7 +254,7 @@ int fm_seek_down()
     return ret;
   }
 
-  return freq;
+  return freq * 10;
 }
 
 int fm_cancel_seek()
